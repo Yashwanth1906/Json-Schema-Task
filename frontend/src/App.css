@@ -1,7 +1,7 @@
 #root {
   width: 100vw;
   margin: 0 auto;
-  padding: 3rem;
+  padding: 2rem;
   text-align: center;
   background-color: #ffffff;
 }
@@ -43,9 +43,9 @@
 }
 
 .container {
-  max-width: 1800px;
+  width: 80vw;
   margin: 0 auto;
-  padding: 3rem;
+  padding: 2rem;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #ffffff;
 }
@@ -80,25 +80,51 @@ h2 {
   border: 2px solid #e5e5e5;
 }
 
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  color: #333333;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.doc-link-form {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
 .doc-link-input {
   flex: 1;
-  padding: 1.2rem;
+  padding: 0.8rem;
   font-size: 1.2rem;
-  border: 2px solid #e5e5e5;
-  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
   transition: all 0.2s;
-  background-color: #ffffff;
+  width: 100%;
+  height: 2.8rem;
 }
 
 .doc-link-input:focus {
   outline: none;
   border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
 .button-group {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
+  justify-content: center;
 }
 
 button {
@@ -107,17 +133,18 @@ button {
   background-color: #3b82f6;
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
+  height: 3.5rem;
   min-width: 200px;
 }
 
 button:hover {
   background-color: #2563eb;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 button:disabled {
@@ -159,6 +186,8 @@ button:disabled {
 }
 
 .form-group {
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 2.5rem;
 }
 
@@ -173,12 +202,14 @@ button:disabled {
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 1.2rem;
+  max-width: 100%;
+  padding: 0.8rem;
   font-size: 1.2rem;
   border: 2px solid #e5e5e5;
-  border-radius: 12px;
+  border-radius: 8px;
   transition: all 0.2s;
   background-color: #ffffff;
+  height: 2.8rem;
 }
 
 .form-group input:focus,
@@ -241,23 +272,25 @@ tr:hover {
 /* Add responsive design */
 @media (max-width: 1600px) {
   #root {
-    max-width: 1600px;
-    padding: 2rem;
+    width: 100vw;
+    padding: 0;
   }
 
   .container {
-    max-width: 1400px;
+    width: 80vw;
+    margin: 0 auto;
     padding: 2rem;
   }
 }
 
 @media (max-width: 1200px) {
   #root {
-    max-width: 1200px;
+    width: 100vw;
   }
 
   .container {
-    max-width: 1000px;
+    width: 80vw;
+    margin: 0 auto;
   }
 
   .dashboard {
@@ -323,14 +356,16 @@ tr:hover {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  padding: 0.5rem 1rem;
+  padding: 1.2rem 2.5rem;
   background-color: #4CAF50;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s;
+  height: 3.5rem;
+  min-width: 200px;
 }
 
 .fetch-data-button:hover {
@@ -391,15 +426,9 @@ tr:hover {
 }
 
 .operation-form {
-  max-width: 800px;
-  margin: 0 auto;
-}
-select{
-  background-color: #ffffff;
-  color: black;
   width: 100%;
-  padding: 0.8rem;
-  font-size: 1rem;
+  max-width: 100%;
+  margin: 0 auto;
 }
 
 .operation-form h2 {
@@ -408,14 +437,14 @@ select{
   font-size: 2.5rem;
 }
 
-input{
+input {
   background-color: #ffffff;
   color: black;
   width: 100%;
-  padding: 0.8rem;
-  font-size: 1rem;
+  padding: 0.5rem;
+  font-size: 1.2rem;
   border: 1px solid #e5e5e5;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .radio-group {
@@ -436,4 +465,15 @@ input{
   width: 18px;
   height: 18px;
   margin: 0;
+}
+
+select {
+  background-color: #ffffff;
+  color: black;
+  width: 100%;
+  padding: 0.8rem;
+  font-size: 1.2rem;
+  height: 2.8rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
 }

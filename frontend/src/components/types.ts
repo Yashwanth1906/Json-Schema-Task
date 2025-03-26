@@ -1,16 +1,20 @@
-export interface Record {
-  name: string;
+export type WriteOption = 'normal' | 'gsoc' | null;
+export type DashboardOption = 'newEntry' | 'updateValue' | 'deleteValue' | null;
+export type GsocDashboardOption = 'initTable' | 'addValue' | 'updateValue' | 'deleteValue' | null;
+
+export interface NormalContent {
+  content: string;
+}
+
+export interface GsocRecord {
+  username: string;
   email: string;
   isCertificateIssued: string;
 }
 
-export type DashboardOption = 'newEntry' | 'updateValue' | 'deleteValue' | null;
-export type WriteOption = 'normal' | 'gsoc' | null;
-export type GsocDashboardOption = 'initTable' | 'addValue' | 'updateValue' | 'deleteValue' | null;
-
-export interface NormalContentNewEntryForm {
-    content : string;
-    addPosition: 'start' | 'end';
+export interface NewEntryForm {
+  content: string;
+  position: 'start' | 'end';
 }
 
 export interface UpdateForm {
@@ -21,13 +25,6 @@ export interface UpdateForm {
 
 export interface DeleteForm {
   contentToDelete: string;
-}
-
-export interface NewEntryForm {
-  name: string;
-  email: string;
-  isCertificateIssued: string;
-  addPosition: 'start' | 'end';
 }
 
 export interface GsocAddForm {
