@@ -1,6 +1,10 @@
-export const insertEntry = async (docId, name, email, status) => {
+import { docs } from "../docsSetup.js";
+
+const DOCUMENT_ID = process.env.DOCID;
+export const insertEntry = async (req,res) => {
     try {
-      const response = await docs.documents.get({ documentId: docId });
+      const { name, email, status } = req.body;
+      const response = await docs.documents.get({ documentId: DOCUMENT_ID });
       const content = response.data.body.content;
   
       let lastIndex = null;
@@ -38,17 +42,18 @@ export const insertEntry = async (docId, name, email, status) => {
       });
   
       console.log("New entry added successfully.");
-      return { success: true, message: "Entry added." };
+      res.json({ success: true, message: "Entry added." });
   
     } catch (error) {
       console.error("Error inserting entry:", error.message);
-      return { success: false, error: error.message };
+      res.status(500).json({ success: false, error: error.message });
     }
   }
   
 
-export const updateStatus = async (email, newStatus) => {
+export const updateStatus = async (req,res) => {
     try {
+      const { email, newStatus } = req.body;
       if (!["YES", "NO"].includes(newStatus)) {
         throw new Error("Invalid status. Must be either 'YES' or 'NO'");
       }
@@ -107,39 +112,77 @@ export const updateStatus = async (email, newStatus) => {
         requestBody: { requests: updateRequest }
       });
   
-      return { success: true, message: `Certificate status updated to ${newStatus}` };
+      res.json({ success: true, message: `Certificate status updated to ${newStatus}` });
   
     } catch (error) {
       console.error("Error updating certificate status:", error.message);
-      return { success: false, error: error.message };
+      res.status(500).json({ success: false, error: error.message });
     }
   }
 
-export const getAllRecords = async () => {  
-    try {
-      const response = await docs.documents.get({ documentId: DOCUMENT_ID });
-      const content = response.data.body.content;
-      const records = [];
-  
-      content.forEach((element) => {
-        if (element.paragraph && element.paragraph.elements) {
-          const text = element.paragraph.elements
-            .map(e => e.textRun?.content)
-            .join("");
-  
-          if (text.trim() && !text.includes("Name") && !text.includes("Email")) {
-            const name = text.substring(0, 20).trim();
-            const email = text.substring(20, 80).trim();
-            const status = text.substring(80).trim();
-            
-            records.push([name, email, status]);
-          }
+export const getAllRecords = async (req,res) => {  
+  try {
+    const response = await docs.documents.get({ documentId: DOCUMENT_ID });
+    const content = response.data.body.content;
+    const records = [];
+
+    content.forEach((element) => {
+      if (element.paragraph && element.paragraph.elements) {
+        const text = element.paragraph.elements
+          .map(e => e.textRun?.content)
+          .join("");
+        if (text.trim() && !text.includes("Name") && !text.includes("Email")) {
+          const name = text.substring(0, 20).trim();
+          const email = text.substring(20, 80).trim();
+          const status = text.substring(80).trim();
+          
+          records.push([name, email, status]);
         }
-      });
-  
-      return { success: true, records };
-    } catch (error) {
-      console.error("Error fetching records:", error.message);
-      return { success: false, error: error.message };
-    }
+      }
+    });
+    return res.status(200).json({ success: true, records });
+  } catch (error) {
+    console.error("Error fetching records:", error.message);
+    return res.status(500).json({ success: false, error: error.message });
   }
+}
+
+export const writeContent = async (req,res) => {
+  try {
+    const { cont } = req.body;
+    const response = await docs.documents.get({ documentId: DOCUMENT_ID });
+    const content = response.data.body.content;
+    
+    let lastIndex = null;
+    content.forEach(element => {
+      if (element.endIndex) {
+        lastIndex = element.endIndex;
+      }
+    });
+
+    if (!lastIndex) {
+      throw new Error("Could not determine the last index in the document.");
+    }
+
+    const formattedContent = `\n${cont}`;
+    
+    await docs.documents.batchUpdate({
+      documentId: DOCUMENT_ID,
+      requestBody: { 
+        requests: [{ 
+          insertText: { 
+            location: { index: lastIndex - 1 },   
+            text: formattedContent 
+          } 
+        }]
+      }
+    });
+    
+    console.log("Content written successfully.");
+    return res.status(200).json({ success: true, message: "Content written successfully." });
+  }
+  catch(error) {
+    console.error("Error writing content:", error.message);
+    return res.status(500).json({ success: false, error: error.message });
+  }
+}
