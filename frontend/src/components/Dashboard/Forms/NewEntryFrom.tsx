@@ -1,5 +1,5 @@
 import React from 'react';
-import { NormalContentNewEntryForm as NewEntryFormType } from '../../types';
+import { NewEntryForm as NewEntryFormType } from '../../types';
 
 interface NewEntryFormProps {
   formData: NewEntryFormType;
@@ -35,8 +35,8 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
                 type="radio"
                 name="addPosition"
                 value="start"
-                checked={formData.addPosition === 'start'}
-                onChange={(e) => onChange({...formData, addPosition: e.target.value as 'start' | 'end'})}
+                checked={formData.position === 'start'}  
+                onChange={(e) => onChange({...formData, position: e.target.value as 'start' | 'end'})}
               />
               At the start of the file
             </label>
@@ -45,8 +45,8 @@ const NewEntryForm: React.FC<NewEntryFormProps> = ({
                 type="radio"
                 name="addPosition"
                 value="end"
-                checked={formData.addPosition === 'end'}
-                onChange={(e) => onChange({...formData, addPosition: e.target.value as 'start' | 'end'})}
+                checked={formData.position === 'end'}
+                onChange={(e) => onChange({...formData, position: e.target.value as 'start' | 'end'})}
               />
               At the end of the file
             </label>

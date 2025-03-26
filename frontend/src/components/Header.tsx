@@ -2,10 +2,12 @@ import React from 'react';
 
 interface HeaderProps {
   docLink: string;
-  setDocLink: (value: string) => void;
+  setDocLink: (link: string) => void;
   onGetDetails: () => void;
   onModifyDocs: () => void;
-  loading: boolean;
+  loading: boolean; 
+  docsLinkUpdated: boolean;
+  setDocsLink: (link: string) => void;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -13,19 +15,35 @@ const Header: React.FC<HeaderProps> = ({
   setDocLink,
   onGetDetails,
   onModifyDocs,
-  loading
+  loading,
+  docsLinkUpdated,
+  setDocsLink
 }) => {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (docLink.trim()) {
+      setDocLink(docLink.trim());
+    }
+  };
+
   return (
-    <div className="header-section">
-      <h1>Google Docs API Interface</h1>
-      <div className="input-section">
-        <input
-          type="text"
-          value={docLink}
-          onChange={(e) => setDocLink(e.target.value)}
-          placeholder="Enter Google Doc Link"
-          className="doc-link-input"
-        />
+    <div className="header">
+      <h1>JSON Schema Task</h1>
+      {!docsLinkUpdated ? (
+        <form onSubmit={handleSubmit} className="doc-link-form">
+          <input
+            type="text"
+            className="doc-link-input"
+            placeholder="Enter Google Doc Link"
+            value={docLink}
+            onChange={(e) => setDocLink(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={loading} onClick={() => setDocsLink(docLink)}>
+            Set Doc Link
+          </button>
+        </form>
+      ) : (
         <div className="button-group">
           <button onClick={onGetDetails} disabled={loading}>
             Get Details
@@ -34,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({
             Modify Docs
           </button>
         </div>
-      </div>
+      )}
     </div>
   );
 };
