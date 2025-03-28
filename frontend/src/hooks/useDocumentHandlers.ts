@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { BACKEND_URL } from '../config';
+import { VITE_BACKEND_URL } from '../config';
 import { 
   DashboardOption, 
   WriteOption, 
@@ -60,7 +60,7 @@ export const useDocumentHandlers = () => {
   const handleGetDetails = async() => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/table/get-all-records`);
+      const response = await axios.get(`${VITE_BACKEND_URL}/api/table/get-all-records`);
       if (response.data.success) {
         setParagraphContent(response.data.parsedContent.normalContent);
         setRecords(response.data.parsedContent.gsocRecords);
@@ -99,7 +99,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/normal/add-entry`, {
+      const response = await axios.post(`${VITE_BACKEND_URL}/api/normal/add-entry`, {
         content: newEntry.content,
         position: newEntry.position
       });
@@ -120,7 +120,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/normal/update-entry`, {
+      const response = await axios.post(`${VITE_BACKEND_URL}/api/normal/update-entry`, {
         valueToUpdate: updateForm.valueToUpdate,
         newValue: updateForm.newValue,
         replaceAll: updateForm.replaceAll
@@ -147,7 +147,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/normal/delete-entry`, {
+      const response = await axios.post(`${VITE_BACKEND_URL}/api/normal/delete-entry`, {
         contentToDelete: deleteForm.contentToDelete
       });
       
@@ -174,7 +174,7 @@ export const useDocumentHandlers = () => {
   const handleInitTable = async() => {
     setLoading(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/table/init-table`);
+      const response = await axios.get(`${VITE_BACKEND_URL}/api/table/init-table`);
       if (response.data.success) {
         setTableStatus({
           isInitialized: true,
@@ -201,7 +201,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/table/add-record`, {
+      const response = await axios.post(`${VITE_BACKEND_URL}/api/table/add-record`, {
         username: gsocAddForm.username,
         email: gsocAddForm.email,
         isCertificateIssued: gsocAddForm.isCertificateIssued
@@ -228,7 +228,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/table/update-record`, {
+      const response = await axios.post(`${VITE_BACKEND_URL}/api/table/update-record`, {
         email: gsocUpdateForm.email,
         updateType: gsocUpdateForm.updateType,
         newValue: gsocUpdateForm.newValue
@@ -263,7 +263,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/table/delete-record`, {
+      const response = await axios.post(`${VITE_BACKEND_URL}/api/table/delete-record`, {
         email: gsocDeleteForm.email
       });
       
@@ -281,8 +281,11 @@ export const useDocumentHandlers = () => {
   };
 
   const setDocsLink = async() => {
+    console.log(VITE_BACKEND_URL);
+    console.log("Came Inside setDocsLink");
+    console.log(docLink);
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/doc/set-docId`, { docLink });
+      const response = await axios.post(`${VITE_BACKEND_URL}/api/doc/set-docId`, { docLink });
       if (response.data.success) {
         setDocsLinkUpdated(true);
         alert(response.data.message);
