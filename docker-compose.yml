@@ -33,6 +33,7 @@ services:
       - /app/node_modules
     restart: unless-stopped
 
+    
 networks:
   app-network:
     driver: bridge
