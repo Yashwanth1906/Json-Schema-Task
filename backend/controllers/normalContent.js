@@ -1,4 +1,4 @@
-import { docObject, DOCUMENT_ID } from "./docIDSetup.js";
+import {  DOCUMENT_ID } from "./docIDSetup.js";
 import { docs } from "../docsSetup.js";
 
 export const addEntry = async(req,res)=>{
@@ -42,7 +42,6 @@ export const addEntry = async(req,res)=>{
       success: true,
       message: "Entry added successfully."
     });
-
   } catch(e) {
     console.error('Error adding entry:', e);
     return res.status(500).json({
@@ -55,7 +54,7 @@ export const addEntry = async(req,res)=>{
 export const updateEntry = async(req,res)=>{
   try{
     const {valueToUpdate, newValue, replaceAll} = req.body;
-    
+
     const doc = await docs.documents.get({
       documentId: DOCUMENT_ID
     });
@@ -66,46 +65,77 @@ export const updateEntry = async(req,res)=>{
         error: 'No content found in document'
       });
     }
+    
+    let tableStartIndex = -1;
+    let tableEndIndex = -1;
 
-    let startIndex = -1;
-    let endIndex = -1;
-
-    doc.data.body.content.forEach(element => {
+    doc.data.body.content.forEach((element, index) => {
       if (element.paragraph?.elements) {
         element.paragraph.elements.forEach(el => {
-          if (el.textRun?.content.includes(valueToUpdate)) {
-            startIndex = el.startIndex;
-            endIndex = startIndex + valueToUpdate.length;
+          if (el.textRun?.content.includes('/* TABLE FORMAT START */')) {
+            tableStartIndex = index;
+          } else if (el.textRun?.content.includes('/* TABLE FORMAT END */')) {
+            tableEndIndex = index;
           }
         });
       }
     });
 
-    if (startIndex === -1) {
+    let updateRequests = [];
+    doc.data.body.content.forEach((element, index) => {
+      if (element.paragraph?.elements) {
+        element.paragraph.elements.forEach(el => {
+          if (index >= tableStartIndex && index <= tableEndIndex) {
+            return;
+          }      
+          if (el.textRun?.content.includes(valueToUpdate)) {
+            const content = el.textRun.content;
+            const wordStartIndex = content.indexOf(valueToUpdate);
+            const startIndex = el.startIndex + wordStartIndex;
+            const endIndex = startIndex + valueToUpdate.length;
+            updateRequests.push({
+              deleteContentRange: {
+                range: {
+                  startIndex,
+                  endIndex
+                }
+              }
+            });
+            updateRequests.push({
+              insertText: {
+                text: newValue,
+                location: {
+                  index: startIndex
+                }
+              }
+            });
+            if (!replaceAll) {
+              return;
+            }
+          }
+        });
+      }
+    });
+
+    if (updateRequests.length === 0) {
       return res.status(404).json({
         success: false,
-        error: 'Text to update not found'
+        error: 'Text to update not found outside table region'
       });
     }
-
+    
     await docs.documents.batchUpdate({
       documentId: DOCUMENT_ID,
       requestBody: {
-        requests: [{
-          replaceText: {
-            text: newValue,
-            startIndex,
-            endIndex
-          }
-        }]
+        requests: updateRequests
       }
     });
 
     return res.status(200).json({
       success: true,
-      message: "Entry updated successfully."
+      message: "Entry updated successfully.",
+      updateRequests
     });
-
   } catch(e) {
     console.error('Error updating entry:', e);
     return res.status(500).json({
@@ -130,38 +160,57 @@ export const deleteEntry = async(req,res)=>{
       });
     }
 
-    let startIndex = -1;
-    let endIndex = -1;
+    let tableStartIndex = -1;
+    let tableEndIndex = -1;
 
-    doc.data.body.content.forEach(element => {
+    doc.data.body.content.forEach((element, index) => {
       if (element.paragraph?.elements) {
         element.paragraph.elements.forEach(el => {
-          if (el.textRun?.content.includes(contentToDelete)) {
-            startIndex = el.startIndex;
-            endIndex = startIndex + contentToDelete.length;
+          if (el.textRun?.content.includes('/* TABLE FORMAT START */')) {
+            tableStartIndex = index;
+          } else if (el.textRun?.content.includes('/* TABLE FORMAT END */')) {
+            tableEndIndex = index;
           }
         });
       }
     });
 
-    if (startIndex === -1) {
+    let deleteRequests = [];
+    doc.data.body.content.forEach((element, index) => {
+      if (element.paragraph?.elements) {
+        element.paragraph.elements.forEach(el => {
+          if (index >= tableStartIndex && index <= tableEndIndex) {
+            return;
+          }   
+          if (el.textRun?.content.includes(contentToDelete)) {
+            const content = el.textRun.content;
+            const wordStartIndex = content.indexOf(contentToDelete); 
+            const startIndex = el.startIndex + wordStartIndex;
+            const endIndex = startIndex + contentToDelete.length;
+            deleteRequests.push({
+              deleteContentRange: {
+                range: {
+                  startIndex,
+                  endIndex
+                }
+              }
+            });
+          }
+        });
+      }
+    });
+
+    if (deleteRequests.length === 0) {
       return res.status(404).json({
         success: false,
-        error: 'Text to delete not found'
+        error: 'Text to delete not found outside table region'
       });
     }
 
     await docs.documents.batchUpdate({
       documentId: DOCUMENT_ID,
       requestBody: {
-        requests: [{
-          deleteContentRange: {
-            range: {
-              startIndex,
-              endIndex
-            }
-          }
-        }]
+        requests: deleteRequests
       }
     });
 
@@ -169,7 +218,6 @@ export const deleteEntry = async(req,res)=>{
       success: true,
       message: "Entry deleted successfully."
     });
-
   } catch(e) {
     console.error('Error deleting entry:', e);
     return res.status(500).json({
