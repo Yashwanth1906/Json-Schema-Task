@@ -6,10 +6,10 @@ import cors from "cors"
 import fs from "fs";
 
 /// This logic is for vercel deployment
-const keyFilePath = "/tmp/key.json";
+const keyFilePath = "./key.json";
 
-// Write the credentials to key.json if not already present
-if (process.env.GOOGLE_CREDENTIALS) {
+if (process.env.GOOGLE_CREDENTIALS && !fs.existsSync(keyFilePath)) {
+  console.log("Writing credentials to key.json");
   fs.writeFileSync(keyFilePath, process.env.GOOGLE_CREDENTIALS);
   process.env.GOOGLE_APPLICATION_CREDENTIALS = keyFilePath;
 }
@@ -26,11 +26,13 @@ app.use(cors({
   credentials: true,
   maxAge: 86400,
 }));
+
+// Define routes before listening
+app.use("/api/doc", docRouter);
+app.use("/api/table", tableContentRouter);
+app.use("/api/normal", normalContentRouter);
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
-
-app.use("/api/doc", docRouter);
-app.use("/api/table", tableContentRouter);
-app.use("/api/normal", normalContentRouter);
