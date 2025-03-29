@@ -3,6 +3,7 @@ import { docRouter } from "./routes/docRoute.js";
 import { tableContentRouter } from "./routes/tableContentRoute.js";
 import { normalContentRouter } from "./routes/normalContentRoute.js";
 import cors from "cors"
+import fs from "fs";
 
 /// This logic is for vercel deployment
 const keyFilePath = "/tmp/key.json";
