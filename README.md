@@ -47,6 +47,12 @@ Link : https://json-schema-task-frontend.vercel.app/
 - Google Docs API -> I chose Google Docs Api and google docs because of the free quota limit provided for it is 10x times higher for read request and 2x times higher for write request than Google Sheets API. And Google App Scripts takes lot of time to fetch data. Google Docs for Scalability and time taken to fetch data from it.
 *TradeOffs* :  Code complexity as we can't insert a row into a table with a prefilled value so we need to manually write down code for maintaining the table structure.
 
+Docs Quota Limit
+![Image](https://github.com/user-attachments/assets/b4555b89-2439-47c1-bdf7-3bd78a7906e3)
+
+Sheets Quota Limit
+![Image](https://github.com/user-attachments/assets/5c6be03f-21b4-4304-99c9-c0b13493f745)
+
 - Jest for testing -> Jest is the commonly used testing library for javascript and it is well suited for writing unit test for separate apis and it has inbuilt mocks that can be created for the docs object.
 
 
@@ -79,7 +85,8 @@ Link : https://json-schema-task-frontend.vercel.app/
 
 - Copy the json file content and put in the GOOGLE_APPLICATION_CREDENTIALS environment variable.
 
-- video link demo :
+- Demo Video to Setup API KEY:
+https://github.com/user-attachments/assets/b93b7e7c-8abb-4e40-938e-0c3ebddbc0f4
   
 ## Environment Variables
 
@@ -158,3 +165,6 @@ Run tests in the backend directory:
 cd  backend
 npm  test
 ```
+
+## Demo Video:
+https://github.com/user-attachments/assets/b947c2f4-4354-4684-8ebf-b43b9078db7c
