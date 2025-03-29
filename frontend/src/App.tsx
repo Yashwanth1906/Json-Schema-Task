@@ -14,7 +14,7 @@ import RecordsTable from './components/RecordsTable'
 import NormalContentDisplay from './components/NormalContentDisplay'
 import { useDocumentHandlers } from './hooks/useDocumentHandlers'
 
-function App() {
+const App = () => {
   const {
     docLink,
     records,
@@ -33,6 +33,7 @@ function App() {
     newEntry,
     updateForm,
     deleteForm,
+    setTableStatus,
     setDocLink,
     setGsocAddForm,
     setGsocUpdateForm,
@@ -71,7 +72,7 @@ function App() {
       {showModifyForm && (
         <WriteOptions onSelect={handleWriteOptionSelect} />
       )}
-      {paragraphContent && (
+      {paragraphContent.length>0 && (
         <NormalContentDisplay content={paragraphContent}/>
       )}
       {records && (
@@ -139,12 +140,13 @@ function App() {
           <div className="content-area">
             {gsocDashboardOption === 'initTable' && (
               <GsocInitTable
+                setTableStatus={setTableStatus}
                 tableStatus={tableStatus}
                 onInit={handleInitTable}
                 loading={loading}
               />
             )}
-
+            
             {gsocDashboardOption === 'addValue' && (
               <GsocAddValue
                 formData={gsocAddForm}

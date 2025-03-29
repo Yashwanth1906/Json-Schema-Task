@@ -27,6 +27,16 @@ const DeleteForm: React.FC<DeleteFormProps> = ({
             required
           />
         </div>
+        <div className="form-group checkbox-group">
+          <label>
+            <input
+              type="checkbox"
+              checked={formData.deleteAllOccurance}
+              onChange={(e) => onChange({...formData, deleteAllOccurance: e.target.checked})}
+            />
+            Delete all occurrences
+          </label>
+        </div>
         <button type="submit" disabled={loading}>
           Delete
         </button>

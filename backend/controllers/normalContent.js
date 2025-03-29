@@ -54,7 +54,7 @@ export const addEntry = async(req,res)=>{
 export const updateEntry = async(req,res)=>{
   try{
     const {valueToUpdate, newValue, replaceAll} = req.body;
-
+    console.log(replaceAll)
     const doc = await docs.documents.get({
       documentId: DOCUMENT_ID
     });
@@ -82,6 +82,8 @@ export const updateEntry = async(req,res)=>{
     });
 
     let updateRequests = [];
+    let indexAdjustment = 0;
+
     doc.data.body.content.forEach((element, index) => {
       if (element.paragraph?.elements) {
         element.paragraph.elements.forEach(el => {
@@ -91,8 +93,9 @@ export const updateEntry = async(req,res)=>{
           if (el.textRun?.content.includes(valueToUpdate)) {
             const content = el.textRun.content;
             const wordStartIndex = content.indexOf(valueToUpdate);
-            const startIndex = el.startIndex + wordStartIndex;
+            const startIndex = el.startIndex + wordStartIndex + indexAdjustment;
             const endIndex = startIndex + valueToUpdate.length;
+            
             updateRequests.push({
               deleteContentRange: {
                 range: {
@@ -109,6 +112,10 @@ export const updateEntry = async(req,res)=>{
                 }
               }
             });
+
+            const lengthDifference = newValue.length - valueToUpdate.length;
+            indexAdjustment += lengthDifference;
+
             if (!replaceAll) {
               return;
             }
@@ -147,7 +154,7 @@ export const updateEntry = async(req,res)=>{
 
 export const deleteEntry = async(req,res)=>{
   try{
-    const {contentToDelete} = req.body;
+    const {contentToDelete,deleteAllOccurance} = req.body;
     
     const doc = await docs.documents.get({
       documentId: DOCUMENT_ID
@@ -176,6 +183,8 @@ export const deleteEntry = async(req,res)=>{
     });
 
     let deleteRequests = [];
+    let indexAdjustment = 0;
+
     doc.data.body.content.forEach((element, index) => {
       if (element.paragraph?.elements) {
         element.paragraph.elements.forEach(el => {
@@ -185,7 +194,7 @@ export const deleteEntry = async(req,res)=>{
           if (el.textRun?.content.includes(contentToDelete)) {
             const content = el.textRun.content;
             const wordStartIndex = content.indexOf(contentToDelete); 
-            const startIndex = el.startIndex + wordStartIndex;
+            const startIndex = el.startIndex + wordStartIndex + indexAdjustment;
             const endIndex = startIndex + contentToDelete.length;
             deleteRequests.push({
               deleteContentRange: {
@@ -195,6 +204,10 @@ export const deleteEntry = async(req,res)=>{
                 }
               }
             });
+            indexAdjustment -= contentToDelete.length;
+            if (!deleteAllOccurance) {
+              return;
+            }
           }
         });
       }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { VITE_BACKEND_URL } from '../config';
+import { BACKEND_URL } from '../config';
 import { 
   DashboardOption, 
   WriteOption, 
@@ -11,7 +11,6 @@ import {
   GsocAddForm, 
   GsocUpdateForm, 
   GsocDeleteForm, 
-  TableStatus, 
   GsocRecord 
 } from '../components/types';
 
@@ -27,10 +26,7 @@ export const useDocumentHandlers = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [gsocDashboardOption, setGsocDashboardOption] = useState<GsocDashboardOption>(null);
-  const [tableStatus, setTableStatus] = useState<TableStatus>({
-    isInitialized: false,
-    message: 'Table not initialized'
-  });
+  const [tableStatus, setTableStatus] = useState<boolean>(false);
   const [gsocAddForm, setGsocAddForm] = useState<GsocAddForm>({
     username: '',
     email: '',
@@ -54,26 +50,32 @@ export const useDocumentHandlers = () => {
     replaceAll: false
   });
   const [deleteForm, setDeleteForm] = useState<DeleteFormType>({
-    contentToDelete: ''
+    contentToDelete: '',
+    deleteAllOccurance : false
   });
 
   const handleGetDetails = async() => {
     setLoading(true);
     try {
-      const response = await axios.get(`${VITE_BACKEND_URL}/api/table/get-all-records`);
+      const response = await axios.get(`${BACKEND_URL}/api/table/get-all-records`);
       if (response.data.success) {
         setParagraphContent(response.data.parsedContent.normalContent);
         setRecords(response.data.parsedContent.gsocRecords);
+        alert(response.data.message || 'Records fetched successfully');
+      } else {
+        alert(response.data.error);
       }
     } catch (err) {
       console.error(err);
       setError('Failed to fetch data');
+      alert('Failed to fetch data');
     } finally {
       setLoading(false);
     }
   };
 
   const handleModifyDocs = () => {
+    setWriteOption(null)
     setShowModifyForm(true);
     setRecords([]);
     setNormalContent('');
@@ -99,18 +101,20 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${VITE_BACKEND_URL}/api/normal/add-entry`, {
+      const response = await axios.post(`${BACKEND_URL}/api/normal/add-entry`, {
         content: newEntry.content,
         position: newEntry.position
       });
       if (response.data.success) {
         setNormalContent(response.data.normalContent);
         setNewEntry({ content: '', position: 'end' });
+        alert(response.data.message || 'Entry added successfully');
       } else {
         alert(response.data.error);
       }
     } catch (err) {
       setError('Failed to add entry' + err);
+      alert('Failed to add entry');
     } finally {
       setLoading(false);
     }
@@ -120,7 +124,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${VITE_BACKEND_URL}/api/normal/update-entry`, {
+      const response = await axios.post(`${BACKEND_URL}/api/normal/update-entry`, {
         valueToUpdate: updateForm.valueToUpdate,
         newValue: updateForm.newValue,
         replaceAll: updateForm.replaceAll
@@ -133,11 +137,13 @@ export const useDocumentHandlers = () => {
           setNormalContent(normalContent.replace(updateForm.valueToUpdate, updateForm.newValue));
         }
         setUpdateForm({ valueToUpdate: '', newValue: '', replaceAll: false });
+        alert(response.data.message || 'Entry updated successfully');
       } else {
         alert(response.data.error);
       }
     } catch (err) {
       setError('Failed to update record' + err);
+      alert('Failed to update record');
     } finally {
       setLoading(false);
     }
@@ -147,18 +153,21 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${VITE_BACKEND_URL}/api/normal/delete-entry`, {
-        contentToDelete: deleteForm.contentToDelete
+      const response = await axios.post(`${BACKEND_URL}/api/normal/delete-entry`, {
+        contentToDelete: deleteForm.contentToDelete,
+        deleteAllOccurance: deleteForm.deleteAllOccurance
       });
       
       if (response.data.success) {
         setNormalContent(normalContent.replace(deleteForm.contentToDelete, ''));
-        setDeleteForm({ contentToDelete: '' });
+        setDeleteForm({ contentToDelete: '', deleteAllOccurance: false });
+        alert(response.data.message || 'Entry deleted successfully');
       } else {
         alert(response.data.error);
       }
     } catch (err) {
       setError('Failed to delete record' + err);
+      alert('Failed to delete record');
     } finally {
       setLoading(false);
     }
@@ -174,24 +183,18 @@ export const useDocumentHandlers = () => {
   const handleInitTable = async() => {
     setLoading(true);
     try {
-      const response = await axios.get(`${VITE_BACKEND_URL}/api/table/init-table`);
+      const response = await axios.get(`${BACKEND_URL}/api/table/init-table`);
       if (response.data.success) {
-        setTableStatus({
-          isInitialized: true,
-          message: 'Table successfully initialized'
-        });
+        setTableStatus(false);
+        alert(response.data.message || 'Table initialized successfully');
       } else {
-        setTableStatus({
-          isInitialized: false,
-          message: response.data.error
-        });
+        setTableStatus(false);
+        alert(response.data.error);
       }
     } catch (err) {
       console.error(err);
-      setTableStatus({
-        isInitialized: false,
-        message: 'Failed to initialize table'
-      });
+      setTableStatus(false);
+      alert('Failed to initialize table');
     } finally {
       setLoading(false);
     }
@@ -201,7 +204,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${VITE_BACKEND_URL}/api/table/add-record`, {
+      const response = await axios.post(`${BACKEND_URL}/api/table/add-record`, {
         username: gsocAddForm.username,
         email: gsocAddForm.email,
         isCertificateIssued: gsocAddForm.isCertificateIssued
@@ -214,11 +217,13 @@ export const useDocumentHandlers = () => {
           isCertificateIssued: gsocAddForm.isCertificateIssued
         }]);
         setGsocAddForm({ username: '', email: '', isCertificateIssued: 'NO' });
+        alert(response.data.message || 'Record added successfully');
       } else {
         alert(response.data.error);
       }
     } catch (err) {
       setError('Failed to add record' + err);
+      alert('Failed to add record');
     } finally {
       setLoading(false);
     }
@@ -228,7 +233,7 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${VITE_BACKEND_URL}/api/table/update-record`, {
+      const response = await axios.post(`${BACKEND_URL}/api/table/update-record`, {
         email: gsocUpdateForm.email,
         updateType: gsocUpdateForm.updateType,
         newValue: gsocUpdateForm.newValue
@@ -249,11 +254,13 @@ export const useDocumentHandlers = () => {
           ));
         }
         setGsocUpdateForm({ email: '', updateType: 'username', newValue: '' });
+        alert(response.data.message || 'Record updated successfully');
       } else {
         alert(response.data.error);
       }
     } catch (err) {
       setError('Failed to update record' + err);
+      alert('Failed to update record');
     } finally {
       setLoading(false);
     }
@@ -263,37 +270,43 @@ export const useDocumentHandlers = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(`${VITE_BACKEND_URL}/api/table/delete-record`, {
+      const response = await axios.post(`${BACKEND_URL}/api/table/delete-record`, {
         email: gsocDeleteForm.email
       });
       
       if (response.data.success) {
         setRecords(records.filter(record => record.email !== gsocDeleteForm.email));
         setGsocDeleteForm({ email: '' });
+        alert(response.data.message || 'Record deleted successfully');
       } else {
         alert(response.data.error);
       }
     } catch (err) {
       setError('Failed to delete record' + err);
+      alert('Failed to delete record');
     } finally {
       setLoading(false);
     }
   };
 
   const setDocsLink = async() => {
-    console.log(VITE_BACKEND_URL);
-    console.log("Came Inside setDocsLink");
-    console.log(docLink);
+    setLoading(true);
     try {
-      const response = await axios.post(`${VITE_BACKEND_URL}/api/doc/set-docId`, { docLink });
+      const response = await axios.post(`${BACKEND_URL}/api/doc/set-docId`, {
+        docLink
+      });
       if (response.data.success) {
         setDocsLinkUpdated(true);
-        alert(response.data.message);
+        alert(response.data.message || 'Document link updated successfully');
       } else {
         alert(response.data.error);
       }
     } catch (err) {
       console.error(err);
+      setError('Failed to update document link');
+      alert('Failed to update document link');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -316,6 +329,7 @@ export const useDocumentHandlers = () => {
     newEntry,
     updateForm,
     deleteForm,
+    setTableStatus,
     setDocLink,
     setGsocAddForm,
     setGsocUpdateForm,

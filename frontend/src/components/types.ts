@@ -25,6 +25,7 @@ export interface UpdateForm {
 
 export interface DeleteForm {
   contentToDelete: string;
+  deleteAllOccurance: boolean;
 }
 
 export interface GsocAddForm {

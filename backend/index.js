@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   allowCredentials: true,
-  origin: ["http://localhost:5173", "https://json-schema-task-frontend.vercel.app"],
+  origin: ["http://localhost:5173", "https://json-schema-task-frontend.vercel.app","http://localhost:5174"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
   exposedHeaders: ["Content-Range", "X-Content-Range"],
@@ -16,7 +16,6 @@ app.use(cors({
   maxAge: 86400,
 }));
 
-// Define routes before listening
 app.use("/api/doc", docRouter);
 app.use("/api/table", tableContentRouter);
 app.use("/api/normal", normalContentRouter);

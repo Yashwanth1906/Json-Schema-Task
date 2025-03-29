@@ -115,7 +115,9 @@ export const addRecord = async(req,res)=>{
       lastEntryIndex = doc.data.body.content[tableStartIndex + 2].endIndex;
     }
 
-    const newEntry = `${username.padEnd(35, " ")}${email.padEnd(69, " ")}${isCertificateIssued}\n`;
+    const padUserName = 45 - username.length;
+    const padEmail = 90 - email.length;
+    const newEntry = `${username.padEnd(padUserName, " ")}${email.padEnd(padEmail, " ")}${isCertificateIssued}\n`;
 
     await docs.documents.batchUpdate({
       documentId: DOCUMENT_ID,
@@ -417,4 +419,44 @@ export const getAllRecords = async (req,res) => {
         success: false, error: error.message 
       });
     }
+}
+
+export const checkTableInited = async(req,res) =>{
+  try{
+    const doc = await docs.documents.get({
+      documentId : DOCUMENT_ID
+    });
+    let tableStartIndex = -1;
+    let tableEndIndex = -1;
+    doc.data.body.content.forEach((element, index) => {
+      if (element.paragraph?.elements) {
+        element.paragraph.elements.forEach(el => {
+          if (el.textRun?.content.includes('/* TABLE FORMAT START */')) {
+            tableStartIndex = index;
+          } else if (el.textRun?.content.includes('/* TABLE FORMAT END */')) {
+            tableEndIndex = index;
+          }
+        });
+      }
+    });
+
+    if (tableStartIndex === -1 || tableEndIndex === -1) {
+      return res.status(200).json({
+        success: true,
+        tableInited : false,
+        message: 'Table format not found'
+      });
+    } else {
+      return res.status(200).json({
+        success : true,
+        tableInited : true,
+        message : "Table format already exists"
+      })
+    }
+  } catch(error) {
+    console.log(error);
+    return res.status(500).json({
+      success : false,message : error.message
+    })
+  }
 }
