@@ -3,24 +3,6 @@ import { docRouter } from "./routes/docRoute.js";
 import { tableContentRouter } from "./routes/tableContentRoute.js";
 import { normalContentRouter } from "./routes/normalContentRoute.js";
 import cors from "cors"
-import fs from "fs";
-import path from "path";
-
-/// This logic is for vercel deployment
-
-const tmpDir = "/tmp";
-const keyFilePath = path.join(tmpDir, "key.json");
-if (!fs.existsSync(tmpDir)) {
-  fs.mkdirSync(tmpDir, { recursive: true });
-}
-
-if (process.env.GOOGLE_CREDENTIALS && !fs.existsSync(keyFilePath)) {
-  console.log("Writing credentials to key.json");
-  fs.writeFileSync(keyFilePath, process.env.GOOGLE_CREDENTIALS);
-  process.env.GOOGLE_APPLICATION_CREDENTIALS = keyFilePath;
-}
-
-// This logic is for vercel deployment
 
 const app = express();
 app.use(express.json());
