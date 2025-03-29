@@ -7,20 +7,9 @@ import fs from "fs";
 import path from "path";
 
 /// This logic is for vercel deployment
-// const keyFilePath = "./tmp/key.json";
 
-// console.log(fs.existsSync(keyFilePath) )
-
-// if (process.env.GOOGLE_CREDENTIALS && !fs.existsSync(keyFilePath)) {
-//   console.log("Writing credentials to key.json");
-//   fs.writeFileSync(keyFilePath, process.env.GOOGLE_CREDENTIALS);
-//   process.env.GOOGLE_APPLICATION_CREDENTIALS = keyFilePath;
-// }
-
-const tmpDir = "./tmp";
+const tmpDir = "/tmp";
 const keyFilePath = path.join(tmpDir, "key.json");
-
-// Ensure the tmp directory exists
 if (!fs.existsSync(tmpDir)) {
   fs.mkdirSync(tmpDir, { recursive: true });
 }
