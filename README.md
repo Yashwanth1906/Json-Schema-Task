@@ -101,7 +101,7 @@ PORT = The port number where you want to run the backend server (Eg : 3000)
 GOOGLE_APPLICATION_CREDENTIALS = Copy the key from the .json file downloaded and put that key surrounded by ``(backticks).
 
 ## Installation
-**Method 1 : Without Using Docker**
+**Method 1 : Without Using Docker (For Both Linux and windows)**
 1. Clone the repository:
 ```bash
 git clone https://github.com/Yashwanth1906/Json-Schema-Task.git
