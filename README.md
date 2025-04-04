@@ -1,5 +1,3 @@
-# GSOC Proposal
-- link : https://docs.google.com/document/d/1wiJqn8n6erE_duryTeLwC7zB33lRTgSrmTU0lNbdrpo/edit?usp=sharing
 # Google Docs Manipulation (GSOC25 Task)
 A full-stack application that allows you to manage content in Google Docs through a web interface. The application supports both table-based data management (GSOC-Tour Table Format) and normal content operations.
 
